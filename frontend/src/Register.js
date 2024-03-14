@@ -4,9 +4,10 @@ import { useRef, useState, useEffect} from "react";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
+
 //Regex statements
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%£*]).{8,24}$/;
 
 const Register = () => {
     //userRef will allow us to set the focus on user input when the component loads
@@ -72,26 +73,35 @@ const Register = () => {
 
             <h1>Register</h1>
             <form>
+                {/* This is the username field */}
                 {/* The htmlFor needs to match the id of the input */}
-                <label htmlFor="username">Username: </label>
-                <input>
+                <label htmlFor="username">Username: 
+                {/* These spans provide the green check mark if the username is valid and the red cross if not*/}
+                    <span className={validName ? "valid" : "hide"}>
+                        <FontAwesomeIcon icon={faCheck} />
+                    </span>
+                    <span className={validName || !user ? "hide" : "invalid"}>
+                        <FontAwesomeIcon icon={faTimes} />
+                    </span>
+                </label>
+                <input
                     type = "text"
                     id = "username"
-                    {/* ref allows us to set focus on the input */}
+                    /* ref allows us to set focus on the input */
                     ref = {userRef}
-                    {/* Autocomplete off because we don't want to see previous values suggested */}
+                    /* Autocomplete off because we don't want to see previous values suggested */
                     autoComplete = "off"
-                    {/* onChange ties the input to the userState */}
+                    /* onChange ties the input to the userState */
                     onChange={(e) => setUser(e.target.value)}
                     required
-                    {/* aria-invalid will be set to true when the component loads because blank is an invalid username */}
+                    /* aria-invalid will be set to true when the component loads because blank is an invalid username */
                     aria-invalid={validName ? "false" : "true"}
-                    {/* This is the final thing read by the screen reader and here we give the full requirements for the field */}
+                    /* This is the final thing read by the screen reader and here we give the full requirements for the field */
                     aria-describedby="uidnote"
-                    {/* Settinig focus */}
+                    /* Settinig focus */
                     onFocus={() => setUserFocus(true)}
                     onBlur={() => setUserFocus(false)}
-                </input>
+                />
                 {/* Info message for the username field */}
                 <p id="uidnote" className={userFocus && user && !validName ? "instructions" : "offscreen"}>
                     <FontAwesomeIcon icon={faInfoCircle} />
@@ -99,7 +109,91 @@ const Register = () => {
                     Must begin with a letter <br/>
                     Letters, numbers, underscores, and hyphens allowed
                 </p>
+
+                {/* This is the password field */}
+                <label htmlFor="password">
+                    Password: 
+                    <span className={validPassword ? "valid" : "hide"}>
+                        <FontAwesomeIcon icon={faCheck} />
+                    </span>
+                    <span className={validPassword || !user ? "hide" : "invalid"}>
+                        <FontAwesomeIcon icon={faTimes} />
+                    </span>
+                </label>
+                <input
+                    type = "password"
+                    id = "password"
+                    /* onChange ties the input to the passwordState */
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    /* aria-invalid will be set to true when the component loads because blank is an invalid username */
+                    aria-invalid={validPassword ? "false" : "true"}
+                    /* This is the final thing read by the screen reader and here we give the full requirements for the field */
+                    aria-describedby="pwdnote"
+                    /* Settinig focus */
+                    onFocus={() => setPasswordFocus(true)}
+                    onBlur={() => setPasswordFocus(false)}
+                />
+                {/* Info message for the password field */}
+                <p id="pwdnote" className={passwordFocus && !validPassword ? "instructions" : "offscreen"}>
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                    8 to 24 characters <br/>
+                    Must include uppercase, lowercase, a number, and a special character <br />
+                    {/* Each character is put in a span with an aria label so the screen reader can read it */}
+                    Allowed special characters: 
+                    <span aria-label="exclamation mark">!</span>
+                    <span aria-label="at symbol">@</span>
+                    <span aria-label="hashtag">#</span>
+                    <span aria-label="dollar sign">$</span>
+                    <span aria-label="percent">%</span>
+                    <span aria-label="pound sign">£</span>
+                    <span aria-label="star">*</span>
+                </p>
+
+                {/* This is the matching password field */}
+                <label htmlFor="confirm_password">
+                    Confirm Password: 
+                    {/* Both validMatch and matchPassword needed or there could be a green check for empty passwords */}
+                    <span className={validMatch && matchPassword ? "valid" : "hide"}>
+                        <FontAwesomeIcon icon={faCheck} />
+                    </span>
+                    <span className={validMatch || !matchPassword ? "hide" : "invalid"}>
+                        <FontAwesomeIcon icon={faTimes} />
+                    </span>
+                </label>
+                <input
+                    type = "password"
+                    id = "confirm_password"
+                    /* onChange ties the input to the passwordState */
+                    onChange={(e) => setMatchPassword(e.target.value)}
+                    required
+                    /* aria-invalid will be set to true when the component loads because blank is an invalid username */
+                    aria-invalid={validMatch ? "false" : "true"}
+                    /* This is the final thing read by the screen reader and here we give the full requirements for the field */
+                    aria-describedby="confirmnote"
+                    /* Settinig focus */
+                    onFocus={() => setMatchFocus(true)}
+                    onBlur={() => setMatchFocus(false)}
+                />
+                {/* Info message for the password field */}
+                <p id="confirmnote" className={passwordFocus && !validPassword ? "instructions" : "offscreen"}>
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                    Must match password
+                </p>
+
+                {/* No need for type=submit as when only one button in a form, that is default */}
+                <button disabled={!validName || !validPassword || !validMatch ? true : false}>
+                    Sign Up
+                </button>
+
             </form>
+
+            <p>
+                Already registered? <br />
+                <span className="line">
+                    <a href="#">Sign In</a>
+                </span>
+            </p>
             
 
         </section>
