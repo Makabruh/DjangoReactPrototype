@@ -12,7 +12,8 @@ class ReactView(APIView):
         output = [{
             'userName': output.userName,
             'password': output.password,
-            'userLevel': output.userLevel
+            'userLevel': output.userLevel,
+            'email': output.email
             }
             for output in React.objects.all()]
         return Response(output)

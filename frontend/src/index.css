@@ -59,7 +59,7 @@ a, a:visited {
   color: #fff;
 }
 
-input[type="text"], input[type="password"], button, textarea {
+input[type="text"], input[type="password"], input[type="email"], button, textarea {
   font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   font-size: 22px;
   padding: 0.25rem;

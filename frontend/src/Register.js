@@ -3,17 +3,24 @@ import { useRef, useState, useEffect} from "react";
 //Import visuals
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+//Import Axios
+import axios from 'axios';
 
+//Backend details
+const backendURL = 'http://localhost:8000'
 
 //Regex statements
+//Note that email will have to be properly checked with mfa
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%£*]).{8,24}$/;
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 const Register = () => {
     //userRef will allow us to set the focus on user input when the component loads
     const userRef = useRef();
     //If we get an error we need to put the focus on the error
     const errRef = useRef();
+    const emailRef = useRef();
 
     //States for user field - user tied to user input, validName a boolean for validation, userFocus tied to focus on input field
     const [user, setUser] = useState('');
@@ -29,6 +36,11 @@ const Register = () => {
     const [validMatch, setValidMatch] = useState(false);
     const [matchFocus, setMatchFocus] = useState(false);
 
+    //Same as above for email
+    const [email, setEmail] = useState('');
+    const [validEmail, setValidEmail] = useState(false);
+    const [emailFocus, setEmailFocus] = useState(false);
+
     //States for error messages and successful submission
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
@@ -41,10 +53,17 @@ const Register = () => {
     //Validating the username input field at every change
     useEffect(() => {
         const result = USER_REGEX.test(user);
-        console.log(result)
+        console.log(result);
         console.log(user);
         setValidName(result);
     }, [user])
+
+    useEffect(() => {
+        const result = EMAIL_REGEX.test(email);
+        console.log(result);
+        console.log(email);
+        setValidEmail(result);
+    }, [email])
 
     //Validating the password input field
     useEffect(() => {
@@ -61,7 +80,34 @@ const Register = () => {
     //Any input state being changed requires a clearing of the error message
     useEffect(() => {
         setErrMsg('');
-    }, [user, password, matchPassword])
+    }, [user, password, matchPassword, email])
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Security - preventing console JS hack of disabled button
+        const v1 = USER_REGEX.test(user);
+        const v2 = PASSWORD_REGEX.test(password);
+        const v3 = EMAIL_REGEX.test(email)
+        if (!v1 || !v2 || !v3) {
+            setErrMsg("Invalid entry");
+            return;
+        }
+
+        const sendRegistrationDetails = async (data) => {
+            try {
+                const response = await axios.post(backendURL, data)
+                console.log('Response: ', response.data)
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        //This is a TEST
+        sendRegistrationDetails({userName: user, password: password, userLevel: 'apprentice', email: email});
+
+        setSuccess(true);
+    }
 
     return (
         // section is more semantic than div
@@ -72,7 +118,7 @@ const Register = () => {
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
 
             <h1>Register</h1>
-            <form>
+            <form onSubmit={handleSubmit}>
                 {/* This is the username field */}
                 {/* The htmlFor needs to match the id of the input */}
                 <label htmlFor="username">Username: 
@@ -110,13 +156,47 @@ const Register = () => {
                     Letters, numbers, underscores, and hyphens allowed
                 </p>
 
+                {/* This is the email field */}
+                <label htmlFor="email">Email: 
+                {/* These spans provide the green check mark if the username is valid and the red cross if not*/}
+                    <span className={validEmail ? "valid" : "hide"}>
+                        <FontAwesomeIcon icon={faCheck} />
+                    </span>
+                    <span className={validEmail || !email ? "hide" : "invalid"}>
+                        <FontAwesomeIcon icon={faTimes} />
+                    </span>
+                </label>
+                <input
+                    type = "email"
+                    id = "email"
+                    /* ref allows us to set focus on the input */
+                    ref = {emailRef}
+                    /* Autocomplete off because we don't want to see previous values suggested */
+                    autoComplete = "off"
+                    /* onChange ties the input to the userState */
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    /* aria-invalid will be set to true when the component loads because blank is an invalid username */
+                    aria-invalid={validEmail ? "false" : "true"}
+                    /* This is the final thing read by the screen reader and here we give the full requirements for the field */
+                    aria-describedby="emailnote"
+                    /* Settinig focus */
+                    onFocus={() => setEmailFocus(true)}
+                    onBlur={() => setEmailFocus(false)}
+                />
+                {/* Info message for the username field */}
+                <p id="emailnote" className={emailFocus && email && !validEmail ? "instructions" : "offscreen"}>
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                    Please input a valid email address
+                </p>
+
                 {/* This is the password field */}
                 <label htmlFor="password">
                     Password: 
                     <span className={validPassword ? "valid" : "hide"}>
                         <FontAwesomeIcon icon={faCheck} />
                     </span>
-                    <span className={validPassword || !user ? "hide" : "invalid"}>
+                    <span className={validPassword || !password ? "hide" : "invalid"}>
                         <FontAwesomeIcon icon={faTimes} />
                     </span>
                 </label>
@@ -191,6 +271,7 @@ const Register = () => {
             <p>
                 Already registered? <br />
                 <span className="line">
+                    {/* Placeholder */}
                     <a href="#">Sign In</a>
                 </span>
             </p>
