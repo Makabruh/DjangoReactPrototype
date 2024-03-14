@@ -4,10 +4,11 @@ import { useRef, useState, useEffect} from "react";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 //Import Axios
-import axios from 'axios';
+import axios from './api/axios';
 
 //Backend details
-const backendURL = 'http://localhost:8000'
+//This will need to become /register or something of that type TODO
+const REGISTER_URL = 'http://localhost:8000'
 
 //Regex statements
 //Note that email will have to be properly checked with mfa
@@ -103,14 +104,22 @@ const Register = () => {
 
         const sendRegistrationDetails = async (data) => {
             try {
-                const response = await axios.post(backendURL, data)
+                //Unsure if I need JSON.stringify here TODO
+                const response = await axios.post(REGISTER_URL, data)
+                //, {headers: { 'Content-Type': 'application/json'}, withCredentials: true}
                 //console.log('Response: ', response.data)
             } catch (error) {
-                console.error(error);
+                if (!error?.response){
+                    setErrMsg('No Server Response');
+                } else if (error.response?.status === 409){
+                    setErrMsg('Username Taken');
+                } else {
+                    setErrMsg('Registration Failed')
+                }
+                errRef.current.focus();
             }
         }
 
-        //This is a TEST
         sendRegistrationDetails({userName: user, password: password, userLevel: userLevel, email: email});
 
         setSuccess(true);
