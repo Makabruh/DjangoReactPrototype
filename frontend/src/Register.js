@@ -59,23 +59,17 @@ const Register = () => {
     //Validating the username input field at every change
     useEffect(() => {
         const result = USER_REGEX.test(user);
-        console.log(result);
-        console.log(user);
         setValidName(result);
     }, [user])
 
     useEffect(() => {
         const result = EMAIL_REGEX.test(email);
-        console.log(result);
-        console.log(email);
         setValidEmail(result);
     }, [email])
 
     //Validating the password input field
     useEffect(() => {
         const result = PASSWORD_REGEX.test(password);
-        console.log(result);
-        console.log(password);
         setValidPassword(result);
         //Comparing the password and match password
         //Have them in the same effect as we want to re-check whenever one of the passwords changes
@@ -86,8 +80,6 @@ const Register = () => {
     //Validating there is a userLevel input and not left empty
     useEffect(() => {
         const result = userLevel.trim() !== '';
-        console.log(result);
-        console.log(userLevel);
         setValidUserLevel(result);
     }, [userLevel])
 
@@ -112,7 +104,7 @@ const Register = () => {
         const sendRegistrationDetails = async (data) => {
             try {
                 const response = await axios.post(backendURL, data)
-                console.log('Response: ', response.data)
+                //console.log('Response: ', response.data)
             } catch (error) {
                 console.error(error);
             }
@@ -125,6 +117,17 @@ const Register = () => {
     }
 
     return (
+        <>
+        {/* This is displayed if the form has been submitted correctly */}
+        {success ? (
+                <section>
+                    <h1>Account Created</h1>
+                    <p>
+                        <a href="#">Sign In Here</a>
+                    </p>
+                </section>
+            ) : (
+        // This is displayed if the form has not been submitted correctly yet
         // section is more semantic than div
         <section>
             {/* Here is our error message, using a ternary operator to check if there is an error message */}
@@ -278,6 +281,7 @@ const Register = () => {
 
                 {/* User Level field - radio */}
                 <p className="userLevelRadio">What type of User are You:</p>
+                {/* Info message - not visible to people looking at the form */}
                 <p id="userLevelNote" className={userLevelFocus && !validUserLevel ? "instructions" : "offscreen"}>
                     <FontAwesomeIcon icon={faInfoCircle} />
                     Must select type of user
@@ -333,9 +337,8 @@ const Register = () => {
                     <a href="#">Sign In</a>
                 </span>
             </p>
-            
-
         </section>
+            )}</>
     )
 }
 
