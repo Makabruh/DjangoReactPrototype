@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from . models import React
+from . models import UserInfo
 from . serializer import ReactSerializer
 
 class ReactView(APIView):
@@ -15,7 +15,7 @@ class ReactView(APIView):
             'userLevel': output.userLevel,
             'email': output.email
             }
-            for output in React.objects.all()]
+            for output in UserInfo.objects.all()]
         return Response(output)
     
     def post(self, request):
