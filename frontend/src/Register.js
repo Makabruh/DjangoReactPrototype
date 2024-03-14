@@ -21,6 +21,7 @@ const Register = () => {
     //If we get an error we need to put the focus on the error
     const errRef = useRef();
     const emailRef = useRef();
+    const userLevelRef = useRef();
 
     //States for user field - user tied to user input, validName a boolean for validation, userFocus tied to focus on input field
     const [user, setUser] = useState('');
@@ -40,6 +41,11 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [validEmail, setValidEmail] = useState(false);
     const [emailFocus, setEmailFocus] = useState(false);
+
+    //Same for user level
+    const [userLevel, setUserLevel] = useState('');
+    const [validUserLevel, setValidUserLevel] = useState(false);
+    const [userLevelFocus, setUserLevelFocus] = useState(false);
 
     //States for error messages and successful submission
     const [errMsg, setErrMsg] = useState('');
@@ -77,6 +83,14 @@ const Register = () => {
         setValidMatch(match);
     }, [password, matchPassword])
 
+    //Validating there is a userLevel input and not left empty
+    useEffect(() => {
+        const result = userLevel.trim() !== '';
+        console.log(result);
+        console.log(userLevel);
+        setValidUserLevel(result);
+    }, [userLevel])
+
     //Any input state being changed requires a clearing of the error message
     useEffect(() => {
         setErrMsg('');
@@ -89,7 +103,8 @@ const Register = () => {
         const v1 = USER_REGEX.test(user);
         const v2 = PASSWORD_REGEX.test(password);
         const v3 = EMAIL_REGEX.test(email)
-        if (!v1 || !v2 || !v3) {
+        const v4 = userLevel.trim() !== '';
+        if (!v1 || !v2 || !v3 || !v4) {
             setErrMsg("Invalid entry");
             return;
         }
@@ -104,7 +119,7 @@ const Register = () => {
         }
 
         //This is a TEST
-        sendRegistrationDetails({userName: user, password: password, userLevel: 'apprentice', email: email});
+        sendRegistrationDetails({userName: user, password: password, userLevel: userLevel, email: email});
 
         setSuccess(true);
     }
@@ -261,8 +276,51 @@ const Register = () => {
                     Must match password
                 </p>
 
+                {/* User Level field - radio */}
+                <p className="userLevelRadio">What type of User are You:</p>
+                <p id="userLevelNote" className={userLevelFocus && !validUserLevel ? "instructions" : "offscreen"}>
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                    Must select type of user
+                </p>
+                <div>
+                    <div className="radioPair">
+                        <label htmlFor="apprentice">
+                            Apprentice
+                        </label>
+                        <input
+                            type="radio"
+                            id="apprentice"
+                            onChange={(e) => setUserLevel(e.target.value)}
+                            name="userLevel"
+                            value="Apprentice"/>
+                    </div>
+                    <div className="radioPair">
+                        <label htmlFor="training-provider">
+                            Training Provider
+                        </label>
+                        <input
+                            type="radio"
+                            id="training-provider"
+                            onChange={(e) => setUserLevel(e.target.value)}
+                            name="userLevel"
+                            value="Training Provider"/>
+                    </div>
+                    <div className="radioPair">
+                        <label htmlFor="employer">
+                            Employer
+                        </label>
+                        <input
+                            type="radio"
+                            id="employer"
+                            onChange={(e) => setUserLevel(e.target.value)}
+                            name="userLevel"
+                            value="Employer"/>
+                    </div>
+                </div>
+                
+
                 {/* No need for type=submit as when only one button in a form, that is default */}
-                <button disabled={!validName || !validPassword || !validMatch ? true : false}>
+                <button disabled={!validName || !validPassword || !validMatch || !validUserLevel ? true : false}>
                     Sign Up
                 </button>
 

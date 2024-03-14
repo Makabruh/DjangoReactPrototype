@@ -120,5 +120,24 @@ button {
     display: inline-block;
 }
 
+.userLevelRadio {
+  margin-top: 1rem;
+  display: flex;
+}
 
+.radioPair {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+}
 
+.radioPair input[type="radio"] {
+  margin-left: 1rem;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
+
+.radioPair label {
+  margin-right: 1rem;
+}
