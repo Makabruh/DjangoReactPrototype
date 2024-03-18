@@ -8,7 +8,7 @@ import axios from './api/axios';
 
 //Backend details
 //This will need to become /register or something of that type TODO
-const REGISTER_URL = 'http://localhost:8000'
+const REGISTER_URL = 'http://localhost:8000/register'
 
 //Regex statements
 //Note that email will have to be properly checked with mfa

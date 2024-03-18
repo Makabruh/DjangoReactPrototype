@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'sdeprototype.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'prototypedb',
+        'NAME': 'prototypedb2',
         'USER': 'root',
         'PASSWORD': 'rootpass',
         'HOST': 'localhost',
