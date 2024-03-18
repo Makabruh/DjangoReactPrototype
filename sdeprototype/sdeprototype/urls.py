@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from app.views import ReactView
+from app.views import ReactView, UserRegistrationAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', ReactView.as_view(), name="loginHopeful"),
+    path('register', UserRegistrationAPIView.as_view(), name="registration"),
 ]
