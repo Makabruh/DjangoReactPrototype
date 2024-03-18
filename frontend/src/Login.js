@@ -1,7 +1,13 @@
-import {useRef, useState, useEffect} from 'react';
+import {useRef, useState, useEffect, useContext} from 'react';
+//Created a global state with use context for the app
+import AuthContext from "./context/AuthProvider"
+import axios from './api/axios';
+//This will need to change to /login or something and the base url staying within ./api/axios TODO
+const LOGIN_URL = '/';
 
 
 const Login = () => {
+    const {setAuth} = useContext(AuthContext);
     //Refs
     const userRef = useRef();
     const errRef = useRef();
@@ -26,10 +32,29 @@ const Login = () => {
     const handleSubmit = async (e) => {
         // The default behaviour of the form would be to reload - we don't want this
         e.preventDefault();
+        try {
+            const response = await axios.post(LOGIN_URL);
+            setUser('');
+            setPassword('');
+            setSuccess(true);
+        } catch (err) {
 
+        }
+        
     }
 
     return (
+        // Open a fragment to show a different view if logged in already
+        <>
+            {success ? (
+                <section>
+                    <h1>Logged in</h1>
+                    <br/>
+                    <p>
+                        <a href="#">Home</a>
+                    </p>
+                </section>
+            ) : (
         <section>
             {/* The error message displayed at the top if there is one (assertive means announced immediately when the focus is put on the error message) */}
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
@@ -75,6 +100,8 @@ const Login = () => {
                 </p>
             </form>
         </section>
+            )}
+            </>
     )
 }
 

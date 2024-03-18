@@ -7,11 +7,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from './api/axios';
 
 //Backend details
-//This will need to become /register or something of that type TODO
-const REGISTER_URL = 'http://localhost:8000/register'
+const REGISTER_URL = '/register'
 
 //Regex statements
-//Note that email will have to be properly checked with mfa
+//Note that email will have to be properly checked with mfa TODO
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%£*]).{8,24}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -102,27 +101,31 @@ const Register = () => {
             return;
         }
 
-        const sendRegistrationDetails = async (data) => {
-            try {
-                //Unsure if I need JSON.stringify here TODO
-                const response = await axios.post(REGISTER_URL, data)
-                //, {headers: { 'Content-Type': 'application/json'}, withCredentials: true}
-                //console.log('Response: ', response.data)
-            } catch (error) {
-                if (!error?.response){
-                    setErrMsg('No Server Response');
-                } else if (error.response?.status === 409){
-                    setErrMsg('Username Taken');
-                } else {
-                    setErrMsg('Registration Failed')
+        try {
+            const response = await axios.post(REGISTER_URL, 
+                { userName: user, password: password, userLevel: userLevel, email: email },
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
                 }
-                errRef.current.focus();
-            }
+            );
+                setSuccess(true);
+                setUser('');
+                setPassword('');
+                setMatchPassword('');
+                setUserLevel('');
+                setEmail('');
         }
-
-        sendRegistrationDetails({userName: user, password: password, userLevel: userLevel, email: email});
-
-        setSuccess(true);
+        catch (error){
+            if (!error?.response){
+                setErrMsg('No Server Response');
+            } else if (error.response?.status === 409){
+                setErrMsg('Username Taken');
+            } else {
+                setErrMsg('Registration Failed')
+            }
+            errRef.current.focus();
+        }
     }
 
     return (
