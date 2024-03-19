@@ -3,7 +3,7 @@ import {useRef, useState, useEffect, useContext} from 'react';
 import AuthContext from "./context/AuthProvider"
 import axios from './api/axios';
 //This will need to change to /login or something and the base url staying within ./api/axios TODO
-const LOGIN_URL = '/';
+const LOGIN_URL = '/login';
 
 
 const Login = () => {
@@ -32,13 +32,24 @@ const Login = () => {
     const handleSubmit = async (e) => {
         // The default behaviour of the form would be to reload - we don't want this
         e.preventDefault();
+        console.log({
+            userName: user,
+            password: password
+        })
         try {
-            const response = await axios.post(LOGIN_URL);
+            //Failing at this block
+            const response = await axios.post(LOGIN_URL, 
+                { userName: user, password: password},
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                }
+            );
             setUser('');
             setPassword('');
             setSuccess(true);
         } catch (err) {
-
+            console.log("here")
         }
         
     }
