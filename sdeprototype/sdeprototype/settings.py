@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-5qztt*_h2izrko5$1qvq*pz*j)29xj-@xs92-0o$m70kpoz7j2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +62,9 @@ REST_FRAMEWORK = {
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://0.0.0.0',
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -92,12 +95,23 @@ WSGI_APPLICATION = 'sdeprototype.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'prototypedb2',
+        'NAME': 'prototypedb3',
         'USER': 'root',
         'PASSWORD': 'rootpass',
         'HOST': 'localhost',
         'PORT': '3306',
     }
+}
+
+AUTH_USER_MODEL = 'app.UserInfo'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    )
 }
 
 

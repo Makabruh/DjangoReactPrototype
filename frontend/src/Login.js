@@ -33,25 +33,28 @@ const Login = () => {
         // The default behaviour of the form would be to reload - we don't want this
         e.preventDefault();
         console.log({
-            userName: user,
+            username: user,
             password: password
         })
         try {
             //Failing at this block
             const response = await axios.post(LOGIN_URL, 
-                { userName: user, password: password},
+                { username: user, password: password},
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
                 }
             );
+            //Optional chaining
+            const accessToken = response?.data?.accessToken;
+            const roles = response?.data?.roles;
+            console.log("Data Posted")
             setUser('');
             setPassword('');
             setSuccess(true);
         } catch (err) {
-            console.log("here")
+            console.log("Error: Catch Statement")
         }
-        
     }
 
     return (
