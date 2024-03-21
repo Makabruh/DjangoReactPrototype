@@ -1,12 +1,18 @@
 import React from 'react';
 import Register from './Register';
 import Login from './Login';
+import QueryButton from './QueryButton';
+import QueryInput from './QueryInput';
 
 function App() {
 
   return(
     <div className="App">
+      <Register />
+      <br />
       <Login />
+      <br />
+      <QueryInput />
     </div>
   );
   

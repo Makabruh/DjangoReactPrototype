@@ -27,7 +27,7 @@ class UserInfoManager(BaseUserManager):
 class UserInfo(AbstractBaseUser, PermissionsMixin):
     #user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=50)
+    password = models.CharField(max_length=130)
     userLevel = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     # Using this to check the makemigrations command - it is not working

@@ -9,6 +9,7 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth import get_user_model, login, logout
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import permissions, status
+from django.contrib.auth.hashers import make_password
 
 class ReactView(APIView):
 
@@ -35,19 +36,25 @@ class UserRegistrationAPIView(APIView):
     #This view only has a post method as it is registration by creating a user
     def post(self, request):
         #post means that this method handles post requests to the url that calls this view
-        print("here1")
+        
         serializer = RegisterSerializer(data=request.data)
-        print("here2")
+        
         if serializer.is_valid():
             #raise_exception=True inside the brackets
             #This if checks that the data is valid according to the serializer
-            print("here3")
+            
             username = serializer.validated_data.get('username')
             #Get the username from the data
-            print("here4")
+            password = serializer.validated_data.get('password')
+            
             if UserInfo.objects.filter(username=username).exists():
                 #Check if the username is free against usernames in the database
                 return Response({"error": "Username is already taken."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            #The password needs to be hashed when stored in order to authenticate on login
+            hashed_password = make_password(password)
+            serializer.validated_data['password'] = hashed_password
+            
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -65,6 +72,7 @@ class UserLoginAPIView(APIView):
         serializer = LoginSerializer(data=data)
         #If everything is fine, log them in
         if serializer.is_valid(raise_exception=True):
+            print(data)
             user = serializer.check_user(data)
             login(request, user)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -125,3 +133,47 @@ class UserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+    
+class QueryView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        output = [{
+            'username': output.username,
+            'password': output.password,
+            'userLevel': output.userLevel,
+            'email': output.email
+            }
+            for output in UserInfo.objects.all()]
+        return Response(output)
+    
+
+class QueryApprenticeView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        #Filter for users with userLevel 'Apprentice'
+        users = UserInfo.objects.filter(userLevel='Apprentices')
+        
+        #Output dictionairy of only usernames
+        output = [{'username': user.username} for user in users]
+        
+        return Response(output)
+    
+class QueryInput(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        print("Reached post")
+        #Get userLevelInput from request data
+        print(request.data)
+        userLevelInput = request.data.get('userLevel')
+        print(userLevelInput)
+        
+        #Filter users based on userLevelInput
+        users = UserInfo.objects.filter(userLevel=userLevelInput)
+        
+        #Output dictionairy of only usernames
+        output = [{'username': user.username} for user in users]
+        
+        return Response(output)

@@ -38,8 +38,6 @@ class LoginSerializer(serializers.ModelSerializer):
             print("Username and password are required")
             #raise serializers.ValidationError('Username and password are required')
     
-    username = serializers.CharField()
-    password = serializers.CharField()
     class Meta:
         model = UserInfo
         fields = ['username', 'password']
