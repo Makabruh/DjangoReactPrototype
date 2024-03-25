@@ -6,7 +6,7 @@ import axios from './api/axios';
 const LOGIN_URL = '/login';
 
 
-const Login = (currentUser) => {
+const Login = ({ currentUser, setCurrentUser }) => {
     const {setAuth} = useContext(AuthContext);
     //Refs
     const userRef = useRef();
@@ -58,8 +58,25 @@ const Login = (currentUser) => {
             setUser('');
             setPassword('');
             setSuccess(true);
+            setCurrentUser(true);
         } catch (err) {
-            console.log("Error: Catch Statement")
+            //If there is no error coming back from the server
+            if(!err?.response){
+                setErrMsg('No Server Response')
+            }
+            else if (err.response?.status === 400) {
+                setErrMsg('Incorrect Username or Password')
+            }
+            else if (err.response?.status === 401) {
+                setErrMsg('Unauthorised')
+            }
+            else if (err.response?.status === 403) {
+                setErrMsg('You do not have the required permissions')
+            } else {
+                setErrMsg('Login Failed')
+                console.log("Error: Catch Statement")
+            }
+            errRef.current.focus();
         }
     }
 
