@@ -26,26 +26,17 @@ class LoginSerializer(serializers.ModelSerializer):
     # The serializer for logging in a user
     username = serializers.CharField()
     password = serializers.CharField()
-
-    def validate(self, attrs):
-        username = attrs.get('username')
-        password = attrs.get('password')
-
-        if username and password:
-            # Perform custom validation if needed
-            return attrs
-        else:
-            print("Username and password are required")
-            #raise serializers.ValidationError('Username and password are required')
     
     class Meta:
         model = UserInfo
         fields = ['username', 'password']
 
     def check_user(self, clean_data):
+        username = clean_data.get('username')
+        password = clean_data.get('password')
         #Failing at the authenticate stage - error 'AnonymousUser' object has no attribute '_meta'
         # This authenticate statement is returning null/none which means that this passes in to the login function
-        user = authenticate(username="testest", password="1")
+        user = authenticate(username=username, password=password)
         #clean_data['password']
         if not user:
             print("User not found")
@@ -54,5 +45,5 @@ class LoginSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model: UserInfo
+        model = UserInfo
         fields = ['username']

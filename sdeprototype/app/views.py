@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model, login, logout
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import permissions, status
 from django.contrib.auth.hashers import make_password
+from django.middleware.csrf import get_token
 
 class ReactView(APIView):
 
@@ -54,7 +55,7 @@ class UserRegistrationAPIView(APIView):
             #The password needs to be hashed when stored in order to authenticate on login
             hashed_password = make_password(password)
             serializer.validated_data['password'] = hashed_password
-            
+
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -65,60 +66,30 @@ class UserLoginAPIView(APIView):
     authentication_classes = (SessionAuthentication,)
 
     def post(self, request):
-        data = request.data
-        # These validations can be added when created in ./validations
-        # assert validate_username(data)
-        # assert validate_password(data)
-        serializer = LoginSerializer(data=data)
-        #If everything is fine, log them in
-        if serializer.is_valid(raise_exception=True):
-            print(data)
-            user = serializer.check_user(data)
-            login(request, user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-    # def post(self, request):
-    #     #serializer = LoginSerializer(data=request.data)
-    #     #username = request.data.get('userName')
-    #     #password = request.data.get('password')
-    #     username = "admin"
-    #     password = "test"
-            
-    #     if not username:
-    #         #Check if nothing has been entered in the username field
-    #         return Response({"message": "Username cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
-    #     #If the username already exists in the database
-    #     if UserInfo.objects.filter(username=username).exists():
-            
-    #         #return Response({"message": "Username in database"}, status=status.HTTP_200_OK)
-    #         print("Username present")
-    #         #This is not going to work as we need to send it back to React that the user can enter another password
-
-    #         passwordCount = 3
-    #         #Check Password - 3 Tries
-    #         print("First Password Check")
-    #         #If the username exists, check the password
-    #         #HERE WE NEED TO FIND THE ID for ID.PASSWORD
-    #         if UserInfo.objects.filter(password=password).exists():
-    #             #check_password(password, password)
-    #             #If the password is correct
-    #             print("Password Successful")
-    #             return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
-    #         elif passwordCount > 0:
-    #             #If the password is incorrect
-    #             print("Password Not Successful")
-    #             passwordCount = passwordCount - 1
-    #             return Response({"message": "Incorrect password"}, status=status.HTTP_400_BAD_REQUEST)
-    #         else:
-    #             #Password count has been reduced to 0 because of too many incorrect attempts
-    #             print("Too many incorrect passwords")
-    #             return Response({"message": "Too many incorrect passwords"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-    #     #If the username does not exist in the database
-    #     else:
-    #         return Response({"message": "Username cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
+        #Get the username from the payload
+        username = request.data.get('username')
+        #Find the specific user object with that username
+        user = UserInfo.objects.filter(username=username)
+        #If there is a user
+        if user is not None:
+            #Instantiate the serializer
+            serializer = LoginSerializer(data=request.data)
+            #Check if the data is valid according to the serializer
+            if serializer.is_valid(raise_exception=True):
+                print(request.data)
+                #Use the check_user function in the serializer
+                user = serializer.check_user(request.data)
+                #If the user object is still not null
+                if user is not None:
+                    #Use the imported login function
+                    login(request, user)
+                    #CSRF token ??
+                    #responseData['csrf_token'] = get_token(request)
+                    return Response("CSRF Token Needed", status=status.HTTP_200_OK)
+                else:
+                    return Response({"message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"message": "Username not in database"}, status=status.HTTP_400_BAD_REQUEST)
 
 #From tutorial
 class UserLogout(APIView):
@@ -147,7 +118,6 @@ class QueryView(APIView):
             for output in UserInfo.objects.all()]
         return Response(output)
     
-
 class QueryApprenticeView(APIView):
     permission_classes = (permissions.AllowAny,)
 
