@@ -31,24 +31,25 @@ function App() {
     })
   })
 
-  //If there is a user logged in then there is no need to login or register
-  if (currentUser) {
-    return (
-      <div>
-        <QueryInput />
-        <Logout currentUser={currentUser} setCurrentUser={setCurrentUser} />
-      </div>
-    )
-  }
 
   return(
     <div className="App">
+      {/* Use a ternary operator to simplify display */}
+      {/* If there is no currentUser then there is a need to register or login and if not then not */}
 
-      <Register />
-      <br />
-      {/* Pass props to child component */}
-      <Login currentUser={currentUser}/>
-    
+      {currentUser ? (
+        <div>
+          <QueryInput />
+          <Logout currentUser={currentUser} setCurrentUser={setCurrentUser} />
+        </div>
+      ) : (
+        <div>
+          <Register />
+          <br />
+          {/* Pass props to child component */}
+          <Login currentUser={currentUser}/>
+        </div>
+      )}
     </div>
   );
   
