@@ -11,6 +11,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework import permissions, status
 from django.contrib.auth.hashers import make_password
 from django.middleware.csrf import get_token
+from rest_framework.permissions import IsAuthenticated
 
 class ReactView(APIView):
 
@@ -85,7 +86,8 @@ class UserLoginAPIView(APIView):
                     login(request, user)
                     #CSRF token ??
                     #responseData['csrf_token'] = get_token(request)
-                    return Response("CSRF Token Needed", status=status.HTTP_200_OK)
+                    csrf_token = get_token(request)
+                    return Response({"csrf_token": csrf_token}, status=status.HTTP_200_OK)
                 else:
                     return Response({"message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -93,6 +95,7 @@ class UserLoginAPIView(APIView):
 
 #From tutorial
 class UserLogout(APIView):
+    permission_classes = (IsAuthenticated,)
     def post(self, request):
         logout(request)
         return Response(status=status.HTTP_200_OK)

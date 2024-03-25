@@ -2,6 +2,9 @@
 import axios from './api/axios';
 import React, { useState, useEffect } from 'react';
 
+//Backend details
+const QUERY_URL = '/queryInput'
+
 
 //The function
 const QueryInput = () => {
@@ -12,7 +15,7 @@ const QueryInput = () => {
         // The default behaviour of the form would be to reload - we don't want this
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8000/queryInput', 
+            const response = await axios.post(QUERY_URL, 
                 { userLevel },
                 {
                     headers: { 'Content-Type': 'application/json' },

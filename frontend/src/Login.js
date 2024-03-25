@@ -6,7 +6,7 @@ import axios from './api/axios';
 const LOGIN_URL = '/login';
 
 
-const Login = () => {
+const Login = (currentUser) => {
     const {setAuth} = useContext(AuthContext);
     //Refs
     const userRef = useRef();
@@ -46,8 +46,14 @@ const Login = () => {
                 }
             );
             //Optional chaining
-            const accessToken = response?.data?.accessToken;
+            //Get the CSRF token from the response data
+            const accessToken = response?.data?.csrf_token;
+            //Roles is not yet in place but will be access levels
             const roles = response?.data?.roles;
+            //Saved in the global context
+            setAuth({user, password, accessToken});
+            console.log(accessToken)
+            console.log(response)
             console.log("Data Posted")
             setUser('');
             setPassword('');

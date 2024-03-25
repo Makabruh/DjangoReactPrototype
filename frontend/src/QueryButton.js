@@ -2,6 +2,9 @@
 import axios from './api/axios';
 import React, { useState } from 'react';
 
+//Backend details
+const QUERY_URL = '/query'
+
 
 //The function
 const QueryButton = () => {
@@ -15,7 +18,7 @@ const QueryButton = () => {
     const handleClickGetAll = async (e) => {
         try {
             //Try to get from the url using axios
-            axios.get('http://localhost:8000/query').then((response) => {
+            axios.get(QUERY_URL).then((response) => {
                 console.log(response.data);
                 data = response.data;
             })
