@@ -281,7 +281,7 @@ const Register = () => {
                     aria-invalid={validMatch ? "false" : "true"}
                     /* This is the final thing read by the screen reader and here we give the full requirements for the field */
                     aria-describedby="confirmnote"
-                    /* Settinig focus */
+                    /* Setting focus */
                     onFocus={() => setMatchFocus(true)}
                     onBlur={() => setMatchFocus(false)}
                 />
@@ -291,48 +291,32 @@ const Register = () => {
                     Must match password
                 </p>
 
-                {/* User Level field - radio */}
-                <p className="userLevelRadio">What type of User are You:</p>
+                {/* User Level field - select */}
                 {/* Info message - not visible to people looking at the form */}
                 <p id="userLevelNote" className={userLevelFocus && !validUserLevel ? "instructions" : "offscreen"}>
                     <FontAwesomeIcon icon={faInfoCircle} />
                     Must select type of user
                 </p>
-                <div>
-                    <div className="radioPair">
-                        <label htmlFor="apprentice">
-                            Apprentice
+                <label htmlFor="selectUserLevel">
+                            Select the Type of User...
                         </label>
-                        <input
-                            type="radio"
-                            id="apprentice"
-                            onChange={(e) => setUserLevel(e.target.value)}
-                            name="userLevel"
-                            value="Apprentice"/>
-                    </div>
-                    <div className="radioPair">
-                        <label htmlFor="training-provider">
-                            Training Provider
-                        </label>
-                        <input
-                            type="radio"
-                            id="training-provider"
-                            onChange={(e) => setUserLevel(e.target.value)}
-                            name="userLevel"
-                            value="Training Provider"/>
-                    </div>
-                    <div className="radioPair">
-                        <label htmlFor="employer">
-                            Employer
-                        </label>
-                        <input
-                            type="radio"
-                            id="employer"
-                            onChange={(e) => setUserLevel(e.target.value)}
-                            name="userLevel"
-                            value="Employer"/>
-                    </div>
-                </div>
+                <select id="selectUserLevel" onChange={(e) => setUserLevel(e.target.value)}>
+                    <option
+                        id="apprentice"
+                        name="userLevel"
+                        value="Apprentice">
+                    Apprentice</option>
+                    <option
+                        id="training-provider"
+                        name="userLevel"
+                        value="Training Provider">
+                    Training Provider</option>
+                    <option
+                        id="employer"
+                        name="userLevel"
+                        value="Employer">
+                    Employer</option>
+                </select>
                 
 
                 {/* No need for type=submit as when only one button in a form, that is default */}

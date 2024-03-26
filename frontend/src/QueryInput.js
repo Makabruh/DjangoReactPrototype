@@ -9,6 +9,9 @@ const QUERY_URL = '/queryInput'
 //The function
 const QueryInput = () => {
     const [userLevel, setUserLevel] = useState('');
+    //To be implemented
+    const [company, setCompany] = useState('');
+
     const [usernames, setUsernames] = useState([]);
     
     const handleSubmit = async (e) => {

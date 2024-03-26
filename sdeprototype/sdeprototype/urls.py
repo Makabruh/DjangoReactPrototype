@@ -28,4 +28,5 @@ urlpatterns = [
     path('query', QueryView.as_view(), name="query"),
     path('queryApprentices', QueryApprenticeView.as_view(), name="apprenticeQuery"),
     path('queryInput', QueryInput.as_view(), name="queryInput"),
+    path('username', UsernameCheck.as_view(), name='username'),
 ]

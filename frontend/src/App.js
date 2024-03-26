@@ -12,7 +12,7 @@ import AuthContext from "./context/AuthProvider"
 
 
 function App() {
-  const {setAuth} = useContext(AuthContext);
+  const {auth, setAuth} = useContext(AuthContext);
 
   //Check for current user
   const [currentUser, setCurrentUser] = useState();
@@ -38,27 +38,36 @@ function App() {
   //This means that the App component re-renders when the currentUser state is updated in the Login component
   //Still requires a reload of the page - TODO
 
+  //For testing purposes - REMOVE
+  useEffect(() => {
+    console.log("User:", auth.user);
+    console.log("Password:", auth.password);
+    console.log("Access Token:", auth.accessToken);
+  }, [auth]);
 
-  return(
+
+  
+  return (
     <div className="App">
-      {/* Use a ternary operator to simplify display */}
-      {/* If there is no currentUser then there is a need to register or login and if not then not */}
-      {/* Need to fetch CSRF token from Auth ?? - TODO */}
-
-      {currentUser ? (
-        <div>
-          {console.log(AuthContext)}
-          <QueryInput />
-          <Logout currentUser={currentUser} setCurrentUser={setCurrentUser} />
-        </div>
-      ) : (
-        <div>
-          <Register />
-          <br />
-          {/* Pass props to child component */}
-          <Login currentUser={currentUser}/>
-        </div>
-      )}
+      {/* Wrap with AuthProvider */}
+      <AuthContext.Provider value={{ auth, setAuth }}>
+        {/* Use a ternary operator to simplify display */}
+        {/* If there is no currentUser then there is a need to register or login and if not then not */}
+        {/* Need to fetch CSRF token from Auth ?? - TODO */}
+        {currentUser ? (
+          <div>
+            <QueryInput />
+            <Logout currentUser={currentUser} setCurrentUser={setCurrentUser} />
+          </div>
+        ) : (
+          <div>
+            <Register />
+            <br />
+            {/* Pass props to child component */}
+            <Login currentUser={currentUser} />
+          </div>
+        )}
+      </AuthContext.Provider>
     </div>
   );
   

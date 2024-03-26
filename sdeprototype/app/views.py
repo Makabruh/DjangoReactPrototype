@@ -69,29 +69,49 @@ class UserLoginAPIView(APIView):
     def post(self, request):
         #Get the username from the payload
         username = request.data.get('username')
-        #Find the specific user object with that username
-        user = UserInfo.objects.filter(username=username)
-        #If there is a user
-        if user is not None:
-            #Instantiate the serializer
-            serializer = LoginSerializer(data=request.data)
-            #Check if the data is valid according to the serializer
-            if serializer.is_valid(raise_exception=True):
-                print(request.data)
-                #Use the check_user function in the serializer
-                user = serializer.check_user(request.data)
-                #If the user object is still not null
-                if user is not None:
-                    #Use the imported login function
-                    login(request, user)
-                    #CSRF token ??
-                    #responseData['csrf_token'] = get_token(request)
-                    csrf_token = get_token(request)
-                    return Response({"csrf_token": csrf_token}, status=status.HTTP_200_OK)
+        browserAddress = True
+        pastBrowserAddress = True
+        # LOGIC - get the mac address or browser address - TODO
+        # LOGIC - get the past address from the database / get all past addresses
+        # Provided a browser address is found
+        if browserAddress is not None:
+            #Find the specific user object with that username
+            user = UserInfo.objects.filter(username=username)
+            #If there is a user
+            if user is not None:
+                #Instantiate the serializer
+                serializer = LoginSerializer(data=request.data)
+                #Check if the data is valid according to the serializer
+                if serializer.is_valid(raise_exception=True):
+                    #Check the current address - is it the same as the last login attempt
+                    if (browserAddress == pastBrowserAddress):
+                        # How would you be able to store a number against this ???
+                        # I think it will have to be stored in the database
+                        #Use the check_user function in the serializer
+                        user = serializer.check_user(request.data)
+                        #CSRF token ??
+                        #responseData['csrf_token'] = get_token(request)
+                        csrf_token = get_token(request)
+                        return Response({"csrf_token": csrf_token}, status=status.HTTP_200_OK)
+                    else:
+                        #Set browser address as the new current address
+                        #Use the check_user function in the serializer
+                        user = serializer.check_user(request.data)
+                        # Will need to be 2FA'd - TODO
+                        #CSRF token ??
+                        #responseData['csrf_token'] = get_token(request)
+                        csrf_token = get_token(request)
+                        return Response({"csrf_token": csrf_token}, status=status.HTTP_200_OK)
                 else:
-                    return Response({"message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"message": "Incorrect data format"}, status=status.HTTP_400_BAD_REQUEST)        
+            else:
+                return Response({"message": "Username not in database"}, status=status.HTTP_400_BAD_REQUEST)
+        #If unable to find Mac Address or Browser Address
         else:
-            return Response({"message": "Username not in database"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "No Browser Located"}, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    
 
 #From tutorial
 class UserLogout(APIView):
@@ -150,3 +170,27 @@ class QueryInput(APIView):
         output = [{'username': user.username} for user in users]
         
         return Response(output)
+    
+class UsernameCheck(APIView):
+    #Also accessed by anyone and uses session authentication
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request):
+        #Get the username from the payload
+        username = request.data.get('username')
+        #Find the specific user object with that username
+        user = UserInfo.objects.filter(username=username)
+        #If there is a user
+        if user is not None:
+            return Response("Good good", status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Username not in database"}, status=status.HTTP_400_BAD_REQUEST)
+
+class LockAccount(APIView):
+    #If too many password attempts have been made, lock account
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request):
+        return Response(status=status.HTTP_200_OK)
